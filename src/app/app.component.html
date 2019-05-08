@@ -5,11 +5,11 @@
   <div id="polygon" draggable="true"></div>
   <div id="rect" draggable="true"></div>
 </div>
-<div id="info">
+<div id="info" style="position: absolute;" [ngStyle]="{top: menuOptions.y, left: menuOptions.x}">
   <div id="circle-info"></div>
   <div id="polygon-info"></div>
   <div id="rect-info"></div>
-  <div class="close"></div>
+  <div id="close" class="close"></div>
 </div>
 <div id="graph"></div>
 

@@ -36,6 +36,14 @@ export class AppComponent implements OnInit {
 
   dragType;
 
+  menuOptions = {
+    hide: true,
+    x: "0px",
+    y: "0px"
+  };
+
+  removeId;
+
   ngOnInit() {
     this.menuInit();
 
@@ -53,9 +61,12 @@ export class AppComponent implements OnInit {
 
   }
 
-  drowInfo(){
-    document.getElementById("circle-info").addEventListener('click', ev => {
-     console.log("circle-info")
+  drowInfo() {
+    document.getElementById("close").addEventListener('click', ev => {
+      console.log("close")
+      this.removeAll();
+      this.data.splice(this.removeId, 1);
+      this.drow();
     }, false);
   }
 
@@ -116,16 +127,23 @@ export class AppComponent implements OnInit {
             .append("rect")
             .attr("id", index)
             .attr("class", "nodes rect-style")
-            .attr("x", element.x -50)
+            .attr("x", element.x - 50)
             .attr("y", element.y - 40)
             .attr("width", 100)
             .attr("height", 80)
             .attr("rx", 10)
             .attr("ry", 10)
+            .on("click", (d, i, s) => {
+              this.menuOptions.x = +s[0].attributes.x.value + 110 + "px";
+              this.menuOptions.y = +s[0].attributes.y.value + 90 + "px";
+              this.removeId = s[0].id;
+              d3.event.stopPropagation();
+            })
             .call(d3.drag()
               .on("start", dragstarted)
               .on("drag", dragged)
-              .on("end", dragended));
+              .on("end", dragended))
+
           break;
 
         default:
@@ -140,16 +158,20 @@ export class AppComponent implements OnInit {
     function dragged(d) {
       self.data[this.getAttribute('id')].x = d3.event.x;
       self.data[this.getAttribute('id')].y = d3.event.y;
-      d3.selectAll("line").remove();
-      d3.selectAll("polygon").remove();
-      d3.selectAll("rect").remove();
-      d3.selectAll("circle").remove();
+      self.removeAll();
       self.drow();
     }
 
     function dragended(d) {
       d3.select(this).classed("active", false);
     }
+  }
+
+  removeAll(){
+    d3.selectAll("line").remove();
+    d3.selectAll("polygon").remove();
+    d3.selectAll("rect").remove();
+    d3.selectAll("circle").remove();
   }
 
   drowLines() {
