@@ -3,13 +3,11 @@
   stroke: #000;
   stroke-width: 2px;
 }
-
 .circle-style {
   stroke: black;
   stroke-width: 2px;
   fill: white;
 }
-
 .polygon-style {
   stroke: black;
   stroke-width: 2px;
@@ -21,121 +19,105 @@
   stroke-width: 2px;
   fill: white;
 }
-
-#circle {
-  width: 50px;
-  height: 50px;
-  -webkit-border-radius: 25px;
-  -moz-border-radius: 25px;
-  border-radius: 25px;
-  background: red;
+.close:hover {
+  opacity: 1;
+  cursor: pointer;
 }
-
-#menu {
-  display: -webkit-inline-box;
-}
-
-#menu div{
-  margin: 10px
-}
-
-#polygon {
-  width: 0;
-  height: 0;
-  border: 25px solid transparent;
-  border-bottom-color: #53ba88;
-  position: relative;
-  top: -25px;
-}
-#polygon:after {
-  content: "";
-  width: 0;
-  height: 0;
+.close:before,
+.close:after {
   position: absolute;
-  left: -25px;
-  top: 25px;
-  border: 25px solid transparent;
-  border-top-color: #53ba88;
+  left: 10px;
+  content: " ";
+  height: 20px;
+  width: 2px;
+  background-color: #333;
+}
+.close:before {
+  transform: rotate(45deg);
+}
+.close:after {
+  transform: rotate(-45deg);
+}
+.menu {
+  position: fixed;
+  left: 35px;
+  border: 1px solid #d0d0d0;
+  top: 35px;
+  background: #fafafa;
+  width: 100px;
+  display: flex;
+  flex-wrap: wrap;
+}
+.menu .menu-item {
+  margin: 10px;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.menu .menu-item > .menu-item-inside {
+  border: 1px solid rgb(97, 97, 97);
+  cursor: grab;
+  box-sizing: border-box;
+}
+.menu .menu-item > .menu-item-inside:active {
+  cursor: grabbing;
+}
+.menu .menu-item > .circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 100px;
+}
+.menu .menu-item > .polygon {
+  transform: rotate(45deg);
+  width: 20px;
+  height: 20px;
+}
+.menu .menu-item > .rect {
+  width: 100%;
+  height: 20px;
+  border-radius: 5px;
 }
 
-#rect {
-  width: 80px;
-  height: 60px;
-  background: #bde2e0;
-  border-radius: 50%/10%;
+.info {
+  background: #ffffff;
+  width: 90px;
+  display: flex;
+  flex-wrap: wrap;
+  box-shadow: 2px 2px 5px #00000080;
+}
+.info .info-item {
+  margin: 5px;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
 }
-#rect:before {
-  content: "";
-  position: absolute;
-  top: 10%;
-  bottom: 10%;
-  right: -5%;
-  left: -5%;
-  background: inherit;
-  border-radius: 5%/50%;
+.info .info-item .info-item-inside {
+  border: 1px solid rgb(97, 97, 97);
+  cursor: grab;
+  box-sizing: border-box;
 }
-
-#polygon-info {
-    width: 0;
-    height: 0;
-    border: 15px solid transparent;
-    border-bottom-color: #53ba88;
-    position: relative;
-    top: -15px;
-  }
-  #polygon-info:after {
-    content: "";
-    width: 0;
-    height: 0;
-    position: absolute;
-    left: -15px;
-    top: 15px;
-    border: 15px solid transparent;
-    border-top-color: #53ba88;
-  }
-  
-  #rect-info {
-    width: 20px;
-    height: 20px;
-    background: #bde2e0;
-    border-radius: 50%/10%;
-    position: relative;
-  }
-  #rect-info:before {
-    content: "";
-    position: absolute;
-    top: 10%;
-    bottom: 10%;
-    right: -5%;
-    left: -5%;
-    background: inherit;
-    border-radius: 5%/50%;
-  }
-  #circle-info {
-    width: 25px;
-    height: 25px;
-    -webkit-border-radius: 25px;
-    -moz-border-radius: 25px;
-    border-radius: 25px;
-    background: red;
-  }
-
-  .close:hover {
-    opacity: 1;
-  }
-  .close:before, .close:after {
-    position: absolute;
-    left: 15px;
-    content: ' ';
-    height: 33px;
-    width: 2px;
-    background-color: #333;
-  }
-  .close:before {
-    transform: rotate(45deg);
-  }
-  .close:after {
-    transform: rotate(-45deg);
-  }
-  
+.info .info-item .info-item-inside.circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 100px;
+}
+.info .info-item .info-item-inside.polygon {
+  transform: rotate(45deg);
+  width: 15px;
+  height: 15px;
+}
+.info .info-item .info-item-inside.rect {
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+}
+.info .info-item .info-item-inside:active {
+  cursor: grabbing;
+}

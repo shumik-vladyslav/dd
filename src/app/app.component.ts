@@ -134,8 +134,8 @@ export class AppComponent implements OnInit {
             .attr("rx", 10)
             .attr("ry", 10)
             .on("click", (d, i, s) => {
-              this.menuOptions.x = +s[0].attributes.x.value + 110 + "px";
-              this.menuOptions.y = +s[0].attributes.y.value + 90 + "px";
+              this.menuOptions.x = +s[0].attributes.x.value + 112 + "px";
+              this.menuOptions.y = +s[0].attributes.y.value + 10 + "px";
               this.removeId = s[0].id;
               d3.event.stopPropagation();
             })

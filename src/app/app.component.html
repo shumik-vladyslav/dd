@@ -1,15 +1,29 @@
 <!-- <svg width="960" height="500"></svg> -->
 
-<div id="menu">
-  <div id="circle" draggable="true"></div>
-  <div id="polygon" draggable="true"></div>
-  <div id="rect" draggable="true"></div>
+<div class="menu" id="menu">
+  <div class="menu-item" id="circle" draggable="true">
+    <div class="menu-item-inside circle"></div>
+  </div>
+  <div class="menu-item" id="polygon" draggable="true">
+    <div class="menu-item-inside polygon"></div>
+  </div>
+  <div class="menu-item" id="rect" draggable="true">
+    <div class="menu-item-inside rect"></div>
+  </div>
 </div>
-<div id="info" style="position: absolute;" [ngStyle]="{top: menuOptions.y, left: menuOptions.x}">
-  <div id="circle-info"></div>
-  <div id="polygon-info"></div>
-  <div id="rect-info"></div>
-  <div id="close" class="close"></div>
+<div class="info" id="info" style="position: absolute;" [ngStyle]="{top: menuOptions.y, left: menuOptions.x}">
+  <div id="circle-info" class=" info-item">
+    <div class="info-item-inside circle"> </div>
+  </div>
+  <div id="polygon-info" class=" info-item">
+    <div class="info-item-inside polygon"> </div>
+  </div>
+  <div id="rect-info" class=" info-item">
+    <div class="info-item-inside rect"> </div>
+  </div>
+  <div id="close" class="close info-item">
+    <div class="info-item-inside"> </div>
+  </div>
 </div>
 <div id="graph"></div>
 
