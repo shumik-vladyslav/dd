@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 export class Shape {
   public style: any;
@@ -23,15 +24,16 @@ declare var d3;
 })
 export class AppComponent implements OnInit {
   vis
-  constructor() {
-
+  constructor(private sanitizer: DomSanitizer) {
+    this.data = JSON.parse(localStorage.getItem("data"));
+    this.generateDownloadJsonUri()
   }
 
   data = [
-    { type: 'circle', x: 30, y: 50 },
-    { type: 'polygon', x: 250, y: 80 },
-    { type: 'rect', x: 130, y: 150 },
-    { type: 'circle', x: 230, y: 250 },
+    // { type: 'circle', x: 170, y: 150 },
+    // { type: 'polygon', x: 350, y: 180 },
+    // { type: 'rect', x: 530, y: 150 },
+    // { type: 'circle', x: 630, y: 250 },
   ];
 
   dragType;
@@ -46,10 +48,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.menuInit();
-
     this.vis = d3.select("#graph")
       .append("svg");
-
     var w = 900,
       h = 400;
     this.vis.attr("width", w)
@@ -58,14 +58,33 @@ export class AppComponent implements OnInit {
       .select("#graph")
     this.drow();
     this.drowInfo();
-
   }
 
   drowInfo() {
     document.getElementById("close").addEventListener('click', ev => {
-      console.log("close")
       this.removeAll();
       this.data.splice(this.removeId, 1);
+      this.menuOptions.hide = true;
+      this.drow();
+    }, false);
+
+    document.getElementById("circle-info").addEventListener('click', ev => {
+      this.removeAll();
+      console.log(this.removeId)
+      this.data.splice(+this.removeId + 1, 0, { type: 'circle', x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
+      this.menuOptions.hide = true;
+      this.drow();
+    }, false);
+    document.getElementById("polygon-info").addEventListener('click', ev => {
+      this.removeAll();
+      this.data.splice(+this.removeId + 1, 0, { type: 'polygon', x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
+      this.menuOptions.hide = true;
+      this.drow();
+    }, false);
+    document.getElementById("rect-info").addEventListener('click', ev => {
+      this.removeAll();
+      this.data.splice(+this.removeId + 1, 0, { type: 'rect', x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
+      this.menuOptions.hide = true;
       this.drow();
     }, false);
   }
@@ -105,6 +124,13 @@ export class AppComponent implements OnInit {
             .attr("cy", element.y)
             .attr("r", "25px")
             .attr("fill", "black")
+            .on("click", (d, i, s) => {
+              this.menuOptions.x = +s[0].attributes.cx.value + 35 + "px";
+              this.menuOptions.y = +s[0].attributes.cy.value + -20 + "px";
+              this.removeId = s[0].id;
+              this.menuOptions.hide = false;
+              d3.event.stopPropagation();
+            })
             .call(d3.drag()
               .on("start", dragstarted)
               .on("drag", dragged)
@@ -116,7 +142,15 @@ export class AppComponent implements OnInit {
             .attr("id", index)
             .attr("points", "25,0 50,25 25,50 0,25")
             .attr("class", "nodes polygon-style")
-            .attr("transform", `matrix(1 0 0 1 ${element.x - 25} ${element.y - 25})`)
+            .attr("transform", `matrix(1 0 0 1 ${element.x - 25} ${element.y - 25} )`)
+            .on("click", (d, i, s) => {
+              let arr = s[0].attributes.transform.value.split(" ");
+              this.menuOptions.x = +arr[4] + 60 + "px";
+              this.menuOptions.y = +arr[5] + 10 + "px";
+              this.removeId = s[0].id;
+              this.menuOptions.hide = false;
+              d3.event.stopPropagation();
+            })
             .call(d3.drag()
               .on("start", dragstarted)
               .on("drag", dragged)
@@ -137,6 +171,7 @@ export class AppComponent implements OnInit {
               this.menuOptions.x = +s[0].attributes.x.value + 112 + "px";
               this.menuOptions.y = +s[0].attributes.y.value + 10 + "px";
               this.removeId = s[0].id;
+              this.menuOptions.hide = false;
               d3.event.stopPropagation();
             })
             .call(d3.drag()
@@ -145,7 +180,6 @@ export class AppComponent implements OnInit {
               .on("end", dragended))
 
           break;
-
         default:
           break;
       }
@@ -165,9 +199,12 @@ export class AppComponent implements OnInit {
     function dragended(d) {
       d3.select(this).classed("active", false);
     }
+
+    localStorage.setItem("data", JSON.stringify(this.data));
+
   }
 
-  removeAll(){
+  removeAll() {
     d3.selectAll("line").remove();
     d3.selectAll("polygon").remove();
     d3.selectAll("rect").remove();
@@ -186,5 +223,43 @@ export class AppComponent implements OnInit {
           .style("stroke", "rgb(6,120,155)");
     })
 
+  }
+  downloadJsonHref
+  generateDownloadJsonUri() {
+    var theJSON = JSON.stringify(this.data);
+    var uri = this.sanitizer.bypassSecurityTrustUrl("data:text/json;charset=UTF-8," + encodeURIComponent(theJSON));
+    this.downloadJsonHref = uri;
+  }
+  public fileChangeEvent(event) {
+    var file = event.srcElement.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload =  (evt) => {
+            this.data = JSON.parse(evt.target['result']);
+            this.removeAll();
+            this.drow();
+        }
+        reader.onerror = function (evt) {
+            console.log('error reading file');
+        }
+    }
+  }
+
+  edit;
+  editText = "";
+  editIndex;
+
+  doubleClick(item, i) {
+    this.edit = item;
+    this.editIndex = i;
+  }
+
+  enterEdit(){
+    this.data[this.editIndex].text = this.editText;
+    this.editText = "";
+    this.edit = null;
+    this.removeAll();
+    this.drow();
   }
 }

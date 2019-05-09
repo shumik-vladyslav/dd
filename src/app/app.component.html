@@ -10,22 +10,66 @@
   <div class="menu-item" id="rect" draggable="true">
     <div class="menu-item-inside rect"></div>
   </div>
+  <div class=" menu-item">
+    <a
+      class="btn btn-clear"
+      title="Download JSON"
+      [href]="downloadJsonHref"
+      download="download.json"
+      >ss</a
+    >
+  </div>
+  <div class=" menu-item">
+    <input
+      type="file"
+      (change)="fileChangeEvent($event)"
+      placeholder="Upload file..."
+    />
+  </div>
 </div>
-<div class="info" id="info" style="position: absolute;" [ngStyle]="{top: menuOptions.y, left: menuOptions.x}">
-  <div id="circle-info" class=" info-item">
-    <div class="info-item-inside circle"> </div>
+<div
+  class="info"
+  id="info"
+  style="position: absolute;"
+  [ngStyle]="{
+    top: menuOptions.y,
+    left: menuOptions.x,
+    display: menuOptions.hide ? 'none' : ''
+  }"
+  [hidden]="menuOptions.hide"
+>
+  <div id="circle-info" class="info-item">
+    <div class="info-item-inside circle"></div>
   </div>
-  <div id="polygon-info" class=" info-item">
-    <div class="info-item-inside polygon"> </div>
+  <div id="polygon-info" class="info-item">
+    <div class="info-item-inside polygon"></div>
   </div>
-  <div id="rect-info" class=" info-item">
-    <div class="info-item-inside rect"> </div>
+  <div id="rect-info" class="info-item">
+    <div class="info-item-inside rect"></div>
   </div>
   <div id="close" class="close info-item">
-    <div class="info-item-inside"> </div>
+    <div class="info-item-inside"></div>
   </div>
 </div>
-<div id="graph"></div>
+<div id="graph">
+  <span
+    *ngFor="let item of data; let i = index"
+    style="position: absolute;"
+    [ngStyle]="{
+      top: item.y  + 'px',
+      left: item.x - 4 + 'px'
+    }"
+    (dblclick)="doubleClick(item, i)"
+    >{{item.text || 'text'}}</span
+  >
+  <input  *ngIf="edit"  style="position: absolute;"
+  [(ngModel)]="editText"
+  (keyup.enter)="enterEdit()"
+  [ngStyle]="{
+    top: edit.y  + 'px',
+    left: edit.x - 4 + 'px'
+  }">
+</div>
 
 <!-- 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
