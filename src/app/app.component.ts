@@ -23,28 +23,20 @@ declare var d3;
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  vis
-  constructor(private sanitizer: DomSanitizer) {
-    this.data = JSON.parse(localStorage.getItem("data"));
-    this.generateDownloadJsonUri()
-  }
-
-  data = [
-    // { type: 'circle', x: 170, y: 150 },
-    // { type: 'polygon', x: 350, y: 180 },
-    // { type: 'rect', x: 530, y: 150 },
-    // { type: 'circle', x: 630, y: 250 },
-  ];
-
+  vis;
   dragType;
-
   menuOptions = {
     hide: true,
     x: "0px",
     y: "0px"
   };
-
   removeId;
+  data = [];
+
+  constructor(private sanitizer: DomSanitizer) {
+    this.data = JSON.parse(localStorage.getItem("data"));
+    this.generateDownloadJsonUri()
+  }
 
   ngOnInit() {
     this.menuInit();
@@ -58,6 +50,19 @@ export class AppComponent implements OnInit {
       .select("#graph")
     this.drow();
     this.drowInfo();
+
+    this.vis.append("svg:defs").append("svg:marker")
+    .attr("id", "triangle")
+    .attr("refX", 6)
+    .attr("refY", 6)
+    .attr("markerWidth", 30)
+    .attr("markerHeight", 30)
+    .attr("markerUnits","userSpaceOnUse")
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 12 6 0 12 3 6")
+    .style("fill", "black");
+    
   }
 
   drowInfo() {
@@ -213,14 +218,52 @@ export class AppComponent implements OnInit {
 
   drowLines() {
     this.data.forEach((e, i, a) => {
-      if (a[i + 1])
+      if (a[i + 1]) {
+        let x = +e.x;
+        let y = +e.y;
+        let x2 = +a[i + 1].x;
+        let y2 = +a[i + 1].y;
+        let minX = Math.abs(x - x2); 
+        let minY = Math.abs(y - y2); 
+        if (minX > minY)
+          if (+x < +x2) {
+            x += 28;
+            x2 -= 28;
+          } else {
+            x -= 28;
+            x2 += 28;
+          }
+        else
+          if (+y < +y2) {
+            y += 28;
+            y2 -= 28;
+          } else {
+            y -= 28;
+            y2 += 28;
+          }
         this.vis
           .append("line")
-          .attr("x1", e.x)
-          .attr("y1", e.y)
-          .attr("x2", a[i + 1].x)
-          .attr("y2", a[i + 1].y)
-          .style("stroke", "rgb(6,120,155)");
+          .attr("x1", x)
+          .attr("y1", y)
+          .attr("x2", x2)
+          .attr("y2", y2)
+          .style("stroke", "rgb(6,120,155)")
+
+          .attr("marker-end", "url(#triangle)")
+        //    .append("marker")
+        // .attr({
+        // 	"id":"arrow",
+        // 	"viewBox":"0 -5 10 10",
+        // 	"refX":5,
+        // 	"refY":0,
+        // 	"markerWidth":4,
+        // 	"markerHeight":4,
+        // 	"orient":"auto"
+        // })
+        // .append("path")
+        // 	.attr("d", "M0,-5L10,0L0,5")
+        // 	.attr("class","arrowHead");
+      }
     })
 
   }
@@ -233,16 +276,16 @@ export class AppComponent implements OnInit {
   public fileChangeEvent(event) {
     var file = event.srcElement.files[0];
     if (file) {
-        var reader = new FileReader();
-        reader.readAsText(file, "UTF-8");
-        reader.onload =  (evt) => {
-            this.data = JSON.parse(evt.target['result']);
-            this.removeAll();
-            this.drow();
-        }
-        reader.onerror = function (evt) {
-            console.log('error reading file');
-        }
+      var reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = (evt) => {
+        this.data = JSON.parse(evt.target['result']);
+        this.removeAll();
+        this.drow();
+      }
+      reader.onerror = function (evt) {
+        console.log('error reading file');
+      }
     }
   }
 
@@ -255,7 +298,7 @@ export class AppComponent implements OnInit {
     this.editIndex = i;
   }
 
-  enterEdit(){
+  enterEdit() {
     this.data[this.editIndex].text = this.editText;
     this.editText = "";
     this.edit = null;

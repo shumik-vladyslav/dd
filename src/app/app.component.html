@@ -1,5 +1,3 @@
-<!-- <svg width="960" height="500"></svg> -->
-
 <div class="menu" id="menu">
   <div class="menu-item" id="circle" draggable="true">
     <div class="menu-item-inside circle"></div>
@@ -16,15 +14,18 @@
       title="Download JSON"
       [href]="downloadJsonHref"
       download="download.json"
-      >ss</a
-    >
+      ><img src="../assets/download.png" width="17px"
+    /></a>
   </div>
   <div class=" menu-item">
     <input
+      #file
       type="file"
       (change)="fileChangeEvent($event)"
       placeholder="Upload file..."
+      style="display: none"
     />
+    <img (click)="file.click()" src="../assets/import.png" width="17px" />
   </div>
 </div>
 <div
@@ -56,25 +57,21 @@
     *ngFor="let item of data; let i = index"
     style="position: absolute;"
     [ngStyle]="{
-      top: item.y  + 'px',
+      top: item.y + 'px',
       left: item.x - 4 + 'px'
     }"
     (dblclick)="doubleClick(item, i)"
-    >{{item.text || 'text'}}</span
+    >{{ item.text || "text" }}</span
   >
-  <input  *ngIf="edit"  style="position: absolute;"
-  [(ngModel)]="editText"
-  (keyup.enter)="enterEdit()"
-  [ngStyle]="{
-    top: edit.y  + 'px',
-    left: edit.x - 4 + 'px'
-  }">
+  <input
+    *ngIf="edit"
+    style="position: absolute;"
+    [(ngModel)]="editText"
+    (keyup.enter)="enterEdit()"
+    [ngStyle]="{
+      top: edit.y + 'px',
+      left: edit.x - 4 + 'px'
+    }"
+  />
 </div>
 
-<!-- 
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-<g><marker id="arrowhead0" viewBox="0 0 60 60" refX="44" refY="34" markerUnits="strokeWidth" markerWidth="8" markerHeight="10" orient="auto">
-            <path d="M 0 0 L 60 30 L 0 60 z" fill="#800000" /> </marker>
-<line marker-end="url(#arrowhead0)" x1="1" y1="1" x2="100" y2="100" stroke="#800000" />
-<rect x="1" y="1" width="100" height="100" stroke="green" fill="none"/>
-</g></svg> -->
