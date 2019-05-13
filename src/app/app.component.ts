@@ -1,20 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-export class Shape {
-  public style: any;
-
-  constructor(public x: number, y: number) {
-    this.style = { 'fill': 'white', 'stroke': 'black', 'stroke-width': '2', 'fill-opacity': '0.95' };
-  }
-}
-
-export class Circle extends Shape {
-  constructor(public x: number, public y: number, public r: number) {
-    super(x, y);
-  }
-}
-
 declare var d3;
 
 @Component({
@@ -32,10 +18,11 @@ export class AppComponent implements OnInit {
   };
   removeId;
   data = [];
+  types = ["circle", "polygon", "rect"];
 
   constructor(private sanitizer: DomSanitizer) {
     this.data = JSON.parse(localStorage.getItem("data"));
-    this.generateDownloadJsonUri()
+    this.generateDownloadJsonUri();
   }
 
   ngOnInit() {
@@ -52,17 +39,17 @@ export class AppComponent implements OnInit {
     this.drowInfo();
 
     this.vis.append("svg:defs").append("svg:marker")
-    .attr("id", "triangle")
-    .attr("refX", 6)
-    .attr("refY", 6)
-    .attr("markerWidth", 30)
-    .attr("markerHeight", 30)
-    .attr("markerUnits","userSpaceOnUse")
-    .attr("orient", "auto")
-    .append("path")
-    .attr("d", "M 0 0 12 6 0 12 3 6")
-    .style("fill", "black");
-    
+      .attr("id", "triangle")
+      .attr("refX", 6)
+      .attr("refY", 6)
+      .attr("markerWidth", 30)
+      .attr("markerHeight", 30)
+      .attr("markerUnits", "userSpaceOnUse")
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M 0 0 12 6 0 12 3 6")
+      .style("fill", "black");
+
   }
 
   drowInfo() {
@@ -73,44 +60,29 @@ export class AppComponent implements OnInit {
       this.drow();
     }, false);
 
-    document.getElementById("circle-info").addEventListener('click', ev => {
-      this.removeAll();
-      console.log(this.removeId)
-      this.data.splice(+this.removeId + 1, 0, { type: 'circle', x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
-      this.menuOptions.hide = true;
-      this.drow();
-    }, false);
-    document.getElementById("polygon-info").addEventListener('click', ev => {
-      this.removeAll();
-      this.data.splice(+this.removeId + 1, 0, { type: 'polygon', x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
-      this.menuOptions.hide = true;
-      this.drow();
-    }, false);
-    document.getElementById("rect-info").addEventListener('click', ev => {
-      this.removeAll();
-      this.data.splice(+this.removeId + 1, 0, { type: 'rect', x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
-      this.menuOptions.hide = true;
-      this.drow();
-    }, false);
+    this.types.forEach((type) => {
+      document.getElementById(type + "-info").addEventListener('click', ev => {
+        this.removeAll();
+        this.data.splice(+this.removeId + 1, 0, { id: this.uuidv4(), type: type, x: this.data[this.removeId].x + 100, y: this.data[this.removeId].y });
+        this.menuOptions.hide = true;
+        this.drow();
+      }, false);
+    })
   }
 
   menuInit() {
-    document.getElementById("circle").addEventListener('dragstart', ev => {
-      this.dragType = "circle";
-    }, false);
-    document.getElementById("polygon").addEventListener('dragstart', ev => {
-      this.dragType = "polygon";
-    }, false);
-    document.getElementById("rect").addEventListener('dragstart', ev => {
-      this.dragType = "rect";
-    }, false);
+    this.types.forEach((type) => {
+      document.getElementById(type).addEventListener('dragstart', ev => {
+        this.dragType = type;
+      }, false);
+    })
 
     document.addEventListener("dragover", function (event) {
       event.preventDefault();
     });
     document.getElementById("graph").addEventListener('drop', ev => {
       ev.preventDefault();
-      this.data.push({ type: this.dragType, x: ev.offsetX, y: ev.offsetY });
+      this.data.push({ id: this.uuidv4(), type: this.dragType, x: ev.offsetX, y: ev.offsetY });
       this.drow();
     }, false)
   }
@@ -188,6 +160,7 @@ export class AppComponent implements OnInit {
         default:
           break;
       }
+      this.generateDownloadJsonUri();
     })
 
     function dragstarted(d) {
@@ -218,29 +191,45 @@ export class AppComponent implements OnInit {
 
   drowLines() {
     this.data.forEach((e, i, a) => {
+
       if (a[i + 1]) {
         let x = +e.x;
         let y = +e.y;
         let x2 = +a[i + 1].x;
         let y2 = +a[i + 1].y;
-        let minX = Math.abs(x - x2); 
-        let minY = Math.abs(y - y2); 
-        if (minX > minY)
+        let minX = Math.abs(x - x2);
+        let minY = Math.abs(y - y2);
+        if (minX > minY) {
           if (+x < +x2) {
-            x += 28;
-            x2 -= 28;
+            x += 25;
+            x2 -= 32;
           } else {
-            x -= 28;
-            x2 += 28;
+            x -= 25;
+            x2 += 32;
           }
-        else
+          if (a[i + 1].type === 'rect') {
+            if (+x < +x2) {
+              x2 -= 25;
+            } else {
+              x2 += 25;
+            }
+          }
+        } else {
           if (+y < +y2) {
-            y += 28;
-            y2 -= 28;
+            y += 25;
+            y2 -= 32;
           } else {
-            y -= 28;
-            y2 += 28;
+            y -= 25;
+            y2 += 32;
           }
+          if (a[i + 1].type === 'rect') {
+            if (+y < +y2) {
+              y2 -= 15;
+            } else {
+              y2 += 15;
+            }
+          }
+        }
         this.vis
           .append("line")
           .attr("x1", x)
@@ -248,22 +237,9 @@ export class AppComponent implements OnInit {
           .attr("x2", x2)
           .attr("y2", y2)
           .style("stroke", "rgb(6,120,155)")
-
           .attr("marker-end", "url(#triangle)")
-        //    .append("marker")
-        // .attr({
-        // 	"id":"arrow",
-        // 	"viewBox":"0 -5 10 10",
-        // 	"refX":5,
-        // 	"refY":0,
-        // 	"markerWidth":4,
-        // 	"markerHeight":4,
-        // 	"orient":"auto"
-        // })
-        // .append("path")
-        // 	.attr("d", "M0,-5L10,0L0,5")
-        // 	.attr("class","arrowHead");
       }
+
     })
 
   }
@@ -305,4 +281,12 @@ export class AppComponent implements OnInit {
     this.removeAll();
     this.drow();
   }
+
+  uuidv4() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
 }
